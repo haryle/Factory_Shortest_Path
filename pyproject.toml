@@ -16,6 +16,7 @@ SQLAlchemy = "^2.0.20"
 mysql-connector-python = "^8.1.0"
 fastapi = "^0.101.1"
 uvicorn = {extras = ["standard"], version = "^0.23.2"}
+pyyaml = "^6.0.1"
 
 [build-system]
 requires = ["poetry-core"]

@@ -1,6 +1,10 @@
+import logging
+import logging.config
 import os
-from typing import Dict, List
+from pathlib import Path
+from typing import Dict, List, Optional
 
+import yaml
 from dotenv import load_dotenv
 from fastapi import FastAPI
 from sqlalchemy import create_engine, select
@@ -11,6 +15,14 @@ from src.db.schema import Base, Connections, Devices
 from src.db.validator import ConnectionType, DeviceType
 from src.shortest_path import Controller
 
+# Setup logging
+log_conf_path = Path(__file__).parent
+with open(log_conf_path / "logging_conf.yaml", "r") as file:
+    log_conf = yaml.load(file, Loader=yaml.FullLoader)
+logging.config.dictConfig(log_conf)
+logger = logging.getLogger(__name__)
+
+# Load environment variables
 load_dotenv()
 
 DATABASE = "mysql"
@@ -30,25 +42,36 @@ app = FastAPI()
 
 
 @app.get("/devices")
-def select_devices() -> List[DeviceType]:
-    with Session() as session:
-        select_stmt = select(Devices).order_by(Devices.id)
-        result = session.scalars(select_stmt).all()
-    return [DeviceType(**item.__dict__) for item in result]
+def select_devices() -> Optional[List[DeviceType]]:
+    logger.info("/devices API invoked")
+    try:
+        with Session() as session:
+            select_stmt = select(Devices).order_by(Devices.id)
+            logger.info(f"SQL stmt: {str(select_stmt)}")
+            result = session.scalars(select_stmt).all()
+        return [DeviceType(**item.__dict__) for item in result]
+    except Exception as e:
+        logger.error(f"ERROR for /devices: {e}")
 
 
 @app.get("/connections")
-def select_connections() -> List[ConnectionType]:
-    with Session() as session:
-        select_stmt = select(Connections)
-        result = session.scalars(select_stmt).all()
-    return [ConnectionType(**item.__dict__) for item in result]
+def select_connections() -> Optional[List[ConnectionType]]:
+    logger.info("/connections API invoked")
+    try:
+        with Session() as session:
+            select_stmt = select(Connections)
+            logger.info(f"SQL stmt: {str(select_stmt)}")
+            result = session.scalars(select_stmt).all()
+        return [ConnectionType(**item.__dict__) for item in result]
+    except Exception as e:
+        logger.error(f"ERROR for /connections: {e}")
 
 
 @app.post("/add/devices/")
 def upsert_devices(
     devices: DeviceType | List[DeviceType],
 ) -> List[Dict]:
+    logger.info("/add/devices/ API invoked")
     if isinstance(devices, DeviceType):
         devices = [devices]
     _devices = [device.model_dump() for device in devices]
@@ -58,12 +81,13 @@ def upsert_devices(
         upsert_stmt = insert_stmt.on_duplicate_key_update(
             name=insert_stmt.inserted.name,
         )
+        logger.info(f"SQL stmt: {upsert_stmt}")
         try:
             session.execute(upsert_stmt)
             session.commit()
-            print("UPSERT INTO DEVICES SUCCESSFUL")
+            logger.info("Upsert into devices successful")
         except Exception as e:
-            print(f"UPSERT ERROR: {e}")
+            logger.error(f"ERROR /add/devices: {e}")
             session.rollback()
     return _devices
 
@@ -72,6 +96,7 @@ def upsert_devices(
 def upsert_connections(
     connections: ConnectionType | List[ConnectionType],
 ) -> List[Dict]:
+    logger.info("/add/connections/ API invoked")
     if isinstance(connections, ConnectionType):
         connections = [connections]
     _connections = [con.model_dump() for con in connections]
@@ -84,17 +109,21 @@ def upsert_connections(
         try:
             session.execute(upsert_stmt)
             session.commit()
-            print("UPSERT INTO CONNECTIONS SUCCESSFUL")
+            logger.info("Upsert into connections successful")
         except Exception as e:
-            print(f"UPSERT ERROR: {e}")
+            logger.error(f"ERROR /add/connections: {e}")
             session.rollback()
     return _connections
 
 
 @app.get("/path/")
 def get_shortest_path(src: str = ...):
-    controller = Controller(
-        devices=select_devices(),
-        connections=select_connections(),
-    )
-    return controller.get_best_path_from_source(src)
+    logger.info(f"/path/?src={src} API invoked")
+    try:
+        controller = Controller(
+            devices=select_devices(),  # type: ignore
+            connections=select_connections(),  # type: ignore
+        )
+        return controller.get_best_path_from_source(src)
+    except Exception as e:
+        logger.error(f"ERROR /path/?src={src}: {e}")
