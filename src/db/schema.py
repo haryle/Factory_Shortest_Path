@@ -90,7 +90,7 @@ class Connections(Base):
             "first<>second",
             "non_self_loop",
         ),
-        # Only one permutation of (first, second) allowed
+        # Only one permutation of (src, dst) allowed
         # Define unidirected edge
         Index("unidirected", pair_min, pair_max, unique=True),
     )
