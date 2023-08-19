@@ -91,9 +91,22 @@ class Program:
 
 if __name__ == "__main__":
     p = Program()
-    p.upsert_devices([{"name": item} for item in ["A", "B", "C", "D"]])
+    p.upsert_devices(
+        [
+            {"name": "A"},
+            {"name": "B"},
+            {"name": "C"},
+            {"name": "D"},
+        ]
+    )
     p.upsert_connections(
-        [{"src": item[0], "dst": item[1], "cost": item[2]} for item in [("A", "B", 24), ("A", "C", 3), ("A", "D", 20), ("C", "D", 12)]],
+        [
+            {"src": "A", "dst": "B", "cost": 24},
+            {"src": "A", "dst": "B", "cost": 24},
+            {"src": "A", "dst": "C", "cost": 3},
+            {"src": "A", "dst": "D", "cost": 20},
+            {"src": "C", "dst": "D", "cost": 12},
+        ],
     )
     result = p.get_shortest_path("A")
     print(f"BEST COSTS: {result[0]}")
