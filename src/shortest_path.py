@@ -181,7 +181,7 @@ class Controller(BaseModel):
             raise ValueError(f"Source was not previously defined: {src.name}")
         return [node.name for node in self.Devices if (src.name, node.name) in self.Connections]
 
-    def get_best_path_from_source(self, src: str | DeviceType) -> BestPathOutput:
+    def get_best_path_from_source(self, src: str | DeviceType) -> Dict:
         if isinstance(src, str):
             src = DeviceType(name=src)
         devices = [item.name for item in self.Devices]
@@ -213,4 +213,4 @@ class Controller(BaseModel):
                 if new_dist < best_path[neighbor]:
                     dist[neighbor] = new_dist
                     prev[neighbor] = item
-        return dist, prev
+        return {"Cost": dist, "Parent": prev}

@@ -1,10 +1,10 @@
 from typing import Optional
 
-from pydantic import BaseModel, field_validator, model_validator
+from pydantic import BaseModel, Field, field_validator, model_validator
 
 
 class DeviceType(BaseModel):
-    name: str
+    name: str = Field(title="name of the device", max_length=30)
     id: Optional[int] = None
 
     def __hash__(self):
@@ -12,16 +12,13 @@ class DeviceType(BaseModel):
 
 
 class ConnectionType(BaseModel):
-    src: str
-    dst: str
-    cost: float
-
-    @field_validator("cost", mode="before")
-    @classmethod
-    def check_non_negative(cls, val: float):
-        if val < 0:
-            raise ValueError("Cost cannot be negative")
-        return val
+    src: str = Field(title="source device of the edge", max_length=30)
+    dst: str = Field(title="dest device of the edge", max_length=30)
+    cost: float = Field(
+        title="cost associated with the edge",
+        ge=0,
+        description="cost cannot be negative",
+    )
 
     @model_validator(mode="after")
     def check_self_loop(self) -> "ConnectionType":

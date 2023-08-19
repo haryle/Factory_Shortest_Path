@@ -101,17 +101,85 @@ Install all required dependencies:
 poetry install 
 ```
 
-## Running main program: 
-
-To run example: 
+## Running `uvicorn` server: 
 
 ```
-poetry shell
-python -im src.main
+uvicorn src.main:app
 ```
 
-Checkout the main file to see the APIs for adding devices and connections. Also to get the shortest path output
+## Adding demo devices and connections:
 
+### Adding devices
+```
+curl -X 'POST' \
+  'http://127.0.0.1:8000/add/devices/' \
+  -H 'accept: application/json' \
+  -H 'Content-Type: application/json' \
+  -d '[
+{
+  "name": "A"
+},
+{
+  "name": "B"
+},
+{
+  "name": "C"
+},
+{
+  "name": "D"
+}
+]'
+```
+
+### Adding connections:
+
+```
+curl -X 'POST' \
+  'http://127.0.0.1:8000/add/connections/' \
+  -H 'accept: application/json' \
+  -H 'Content-Type: application/json' \
+  -d '[
+{
+  "src": "A",
+  "dst": "B",
+  "cost": 24
+},
+{
+  "src": "A",
+  "dst": "C",
+  "cost": 3
+},
+{
+  "src": "A",
+  "dst": "D",
+  "cost": 20
+},
+{
+  "src": "C",
+  "dst": "D",
+  "cost": 12
+}
+]'
+```
+
+### See available devices: 
+
+```
+http://127.0.0.1:8000/devices
+```
+
+### See available connections:
+
+```
+http://127.0.0.1:8000/connections
+```
+
+### See best path from src:
+
+```
+http://127.0.0.1:8000/path?src=A
+```
+Change A to any other source path
 
 ## Testing
 
