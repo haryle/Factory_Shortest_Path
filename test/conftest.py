@@ -48,6 +48,3 @@ def graph_test_set_2():
         devices=["A", "B", "C", "D"],
         connections=[("A", "B", 24), ("A", "C", 3), ("A", "D", 20), ("C", "D", 12)],
     )
-
-
-[{"src": item[0], "dst": item[1], "cost": item[2]} for item in [("A", "B", 24), ("A", "C", 3), ("A", "D", 20), ("C", "D", 12)]]

@@ -33,13 +33,13 @@ class Program:
     def __init__(self):
         Base.metadata.create_all(engine)
 
-    def select_devices(self, Session) -> List[DeviceType]:
+    def select_devices(self, Session=Session) -> List[DeviceType]:
         with Session() as session:
             select_stmt = select(Devices).order_by(Devices.id)
             result = session.scalars(select_stmt).all()
         return [DeviceType(**item.__dict__) for item in result]
 
-    def select_connections(self, Session) -> List[ConnectionType]:
+    def select_connections(self, Session=Session) -> List[ConnectionType]:
         with Session() as session:
             select_stmt = select(Connections)
             result = session.scalars(select_stmt).all()
@@ -81,7 +81,7 @@ class Program:
                 print(f"UPSERT ERROR: {e}")
                 session.rollback()
 
-    def get_shortest_path(self, src: str, Session):
+    def get_shortest_path(self, src: str, Session=Session):
         controller = Controller(
             devices=self.select_devices(Session),
             connections=self.select_connections(Session),
@@ -91,4 +91,10 @@ class Program:
 
 if __name__ == "__main__":
     p = Program()
-    p.get_shortest_path("A", Session)
+    p.upsert_devices([{"name": item} for item in ["A", "B", "C", "D"]])
+    p.upsert_connections(
+        [{"src": item[0], "dst": item[1], "cost": item[2]} for item in [("A", "B", 24), ("A", "C", 3), ("A", "D", 20), ("C", "D", 12)]],
+    )
+    result = p.get_shortest_path("A")
+    print(f"BEST COSTS: {result[0]}")
+    print(f"BEST PATHS: {result[1]}")
