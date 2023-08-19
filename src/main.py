@@ -4,6 +4,7 @@ import os
 from pathlib import Path
 from typing import Dict, List, Optional
 
+import uvicorn
 import yaml
 from dotenv import load_dotenv
 from fastapi import FastAPI
@@ -15,12 +16,20 @@ from src.db.schema import Base, Connections, Devices
 from src.db.validator import ConnectionType, DeviceType
 from src.shortest_path import Controller
 
+# Create log files
+log_file_path = Path(__file__).parents[1] / "log"
+normal_log = log_file_path / "normal.log"
+error_log = log_file_path / "error.log"
+normal_log.mkdir(parents=True, exist_ok=True)
+error_log.mkdir(parents=True, exist_ok=True)
+
 # Setup logging
-log_conf_path = Path(__file__).parent
-with open(log_conf_path / "logging_conf.yaml", "r") as file:
+log_conf_path = Path(__file__).parent / "logging_conf.yaml"
+with open(log_conf_path, "r") as file:
     log_conf = yaml.load(file, Loader=yaml.FullLoader)
 logging.config.dictConfig(log_conf)
 logger = logging.getLogger(__name__)
+
 
 # Load environment variables
 load_dotenv()
@@ -127,3 +136,7 @@ def get_shortest_path(src: str = ...):
         return controller.get_best_path_from_source(src)
     except Exception as e:
         logger.error(f"ERROR /path/?src={src}: {e}")
+
+
+if __name__ == "__main__":
+    uvicorn.run(app, host="localhost", port=8000, log_config=str(log_conf_path))
