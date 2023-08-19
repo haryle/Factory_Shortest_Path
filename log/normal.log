@@ -1,0 +1,12 @@
+2023-08-20 08:26:33,229 - src.main - INFO - /devices API invoked
+2023-08-20 08:26:33,233 - src.main - INFO - SQL stmt: SELECT devices.id, devices.name 
+FROM devices ORDER BY devices.id
+2023-08-20 08:26:51,292 - src.main - INFO - /connections API invoked
+2023-08-20 08:26:51,293 - src.main - INFO - SQL stmt: SELECT connections.src, connections.dst, connections.cost, connections.pair_min, connections.pair_max 
+FROM connections
+2023-08-20 08:27:34,819|src.main|INFO - /connections API invoked
+2023-08-20 08:27:34,825|src.main|INFO - SQL stmt: SELECT connections.src, connections.dst, connections.cost, connections.pair_min, connections.pair_max 
+FROM connections
+2023-08-20T08:30:16|src.main|INFO - /devices API invoked
+2023-08-20T08:30:16|src.main|INFO - SQL stmt: SELECT devices.id, devices.name 
+FROM devices ORDER BY devices.id
