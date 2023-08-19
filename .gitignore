@@ -43,4 +43,6 @@ poetry/core/*
 .env
 **/.env
 log/**
-log/normal.log 
+*.log
+**.log
+**/**.log
