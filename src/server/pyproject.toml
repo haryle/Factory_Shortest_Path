@@ -8,8 +8,6 @@ packages = [{include = "sep_server"}]
 
 [tool.poetry.dependencies]
 python = "^3.10"
-
-[tool.poetry.group.dev.dependencies]
 numpy = "^1.25.2"
 SQLAlchemy = "^2.0.20"
 mysql-connector-python = "^8.1.0"

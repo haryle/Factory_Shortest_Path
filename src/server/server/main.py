@@ -16,7 +16,7 @@ from .shortest_path import Controller
 from .validator import ConnectionType, DeviceType
 
 # Create log files
-log_file_path = Path(__file__).parents[1] / "log"
+log_file_path = Path(__file__).parents[2] / "log"
 log_file_path.mkdir(parents=True, exist_ok=True)
 normal_log = log_file_path / "normal.log"
 error_log = log_file_path / "error.log"
