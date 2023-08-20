@@ -4,24 +4,22 @@ import os
 from pathlib import Path
 from typing import Dict, List, Optional
 
-import uvicorn
 import yaml
-from dotenv import load_dotenv
 from fastapi import FastAPI
+from schema import Base, Connections, Devices
+from shortest_path import Controller
 from sqlalchemy import create_engine, select
 from sqlalchemy.dialects.mysql import insert
 from sqlalchemy.orm import sessionmaker
-
-from src.db.schema import Base, Connections, Devices
-from src.db.validator import ConnectionType, DeviceType
-from src.shortest_path import Controller
+from validator import ConnectionType, DeviceType
 
 # Create log files
-log_file_path = Path(__file__).parents[1] / "log"
+log_file_path = Path(__file__).parent / "log"
+log_file_path.mkdir(parents=True, exist_ok=True)
 normal_log = log_file_path / "normal.log"
 error_log = log_file_path / "error.log"
-normal_log.mkdir(parents=True, exist_ok=True)
-error_log.mkdir(parents=True, exist_ok=True)
+normal_log.touch(exist_ok=True)
+error_log.touch(exist_ok=True)
 
 # Setup logging
 log_conf_path = Path(__file__).parent / "logging_conf.yaml"
@@ -32,8 +30,6 @@ logger = logging.getLogger(__name__)
 
 
 # Load environment variables
-load_dotenv()
-
 DATABASE = "mysql"
 DIALECT = "mysqlconnector"
 DB_USR = os.getenv("DB_USR")
@@ -136,7 +132,3 @@ def get_shortest_path(src: str = ...):
         return controller.get_best_path_from_source(src)
     except Exception as e:
         logger.error(f"ERROR /path/?src={src}: {e}")
-
-
-if __name__ == "__main__":
-    uvicorn.run(app, host="localhost", port=8000, log_config=str(log_conf_path))
