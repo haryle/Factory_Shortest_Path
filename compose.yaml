@@ -1,0 +1,30 @@
+version: '3'
+services:
+  mysql:
+    image: mysql:8.0
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    environment:
+      MYSQL_DATABASE: SEP
+      MYSQL_USER: harry
+      MYSQL_PASSWORD: 1234
+      MYSQL_ROOT_PASSWORD: root_password
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  sep_server:
+    build:
+      context: .
+      dockerfile: src/server/Dockerfile
+    ports:
+      - "8000:8000"
+    depends_on:
+      - mysql
+    environment:
+      DB_USR: harry
+      DB_PASSWD: 1234
+      DB_ADDR: mysql
+      DB_NAME: SEP
+
+volumes:
+  mysql_data:

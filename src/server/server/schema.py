@@ -87,7 +87,7 @@ class Connections(Base):
             "non_negative_cost",
         ),
         CheckConstraint(  # No self loop allowed
-            "first<>second",
+            "src<>dst",
             "non_self_loop",
         ),
         # Only one permutation of (src, dst) allowed
