@@ -1,3 +1,5 @@
+# DEPRECATED 
+
 # Setting up the database (need to do only once): 
 
 ## Download `MySQL`
