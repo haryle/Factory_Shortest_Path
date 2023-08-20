@@ -1,38 +1,27 @@
-FROM python:3.10-slim as python-base
+FROM python:3.10 as requirements-stage
 
-# https://python-poetry.org/docs#ci-recommendations
-ENV POETRY_VERSION=1.5.1
-ENV POETRY_HOME=/opt/poetry
-ENV POETRY_VENV=/opt/poetry-venv
+# 
+WORKDIR /tmp
 
-# Tell Poetry where to place its cache and virtual environment
-ENV POETRY_CACHE_DIR=/opt/.cache
+RUN pip install poetry
+COPY src/server/pyproject.toml src/server/poetry.lock* /tmp/
 
-# Create stage for Poetry installation
-FROM python-base as poetry-base
+# 
+RUN poetry export -f requirements.txt --output requirements.txt --without-hashes
 
-# Creating a virtual environment just for poetry and install it with pip
-RUN python3 -m venv $POETRY_VENV \
-    && $POETRY_VENV/bin/pip install -U pip setuptools \
-    && $POETRY_VENV/bin/pip install poetry==${POETRY_VERSION}
+# 
+FROM python:3.10
 
-# Create a new stage from the base python image
-FROM python-base as ingest
-
-# Copy Poetry to app image
-COPY --from=poetry-base ${POETRY_VENV} ${POETRY_VENV}
-
-# Add Poetry to PATH
-ENV PATH="${PATH}:${POETRY_VENV}/bin"
+# 
 WORKDIR /app
 
-# Copy Dependencies
-COPY src/server/poetry.lock src/server/pyproject.toml ./
-RUN poetry check
+# 
+COPY --from=requirements-stage /tmp/requirements.txt /code/requirements.txt
 
-# Install Dependencies
-RUN poetry install --no-root --no-interaction --no-cache --without test
+# 
+RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
 
-# Copy Application
-COPY src/server/ /app/server
-CMD [ "poetry", "run", "python", "-m", "server.server.main" ]
+# 
+COPY src/server/server /app
+
+CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000", "--log-config", "logging_conf.yaml"]
