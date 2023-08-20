@@ -17,7 +17,7 @@ from typing import Annotated, Any, Dict, List, Tuple, Union
 from pydantic import BaseModel, computed_field, model_validator
 from pydantic.functional_validators import BeforeValidator
 
-from src.db.validator import ConnectionType, DeviceType
+from .validator import ConnectionType, DeviceType
 
 EdgeDict = Dict[Tuple[str, str], float]
 BestDist = Dict[str, float]
