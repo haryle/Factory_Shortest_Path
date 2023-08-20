@@ -1,21 +1,21 @@
 [tool.poetry]
-name = "sep-sp"
+name = "sep-server"
 version = "0.1.0"
 description = ""
 authors = ["hson <lehoangsonsg@gmail.com>"]
 readme = "README.md"
-packages = [{include = "sep_sp"}]
+packages = [{include = "sep_server"}]
 
 [tool.poetry.dependencies]
 python = "^3.10"
-numpy = "^1.25.2"
-pydantic = "^2.2.0"
-pytest = "^7.4.0"
-python-dotenv = "^1.0.0"
 SQLAlchemy = "^2.0.20"
 mysql-connector-python = "^8.1.0"
 fastapi = "^0.101.1"
 uvicorn = {extras = ["standard"], version = "^0.23.2"}
+pyyaml = "^6.0.1"
+
+[tool.poetry.group.test.dependencies]
+pytest = "^7.4.0"
 
 [build-system]
 requires = ["poetry-core"]

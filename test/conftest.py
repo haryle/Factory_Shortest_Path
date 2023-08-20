@@ -1,7 +1,7 @@
 import pytest
 from pytest import fixture
 
-from src.shortest_path import Controller
+from src.server.server.shortest_path import Controller
 
 
 @fixture(scope="function")

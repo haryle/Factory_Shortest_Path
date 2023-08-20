@@ -101,10 +101,10 @@ Install all required dependencies:
 poetry install 
 ```
 
-## Running `uvicorn` server: 
+## Running the API server: 
 
 ```
-uvicorn src.main:app
+python -m src.main
 ```
 
 ## Adding demo devices and connections:
